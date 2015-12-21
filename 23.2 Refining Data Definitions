@@ -46,3 +46,11 @@
 (define TS (make-dir 'TS `(,Text read! ,Libs)))
 
 ; exercise 319
+;; Dir.v2 -> Number
+(define (how-many x)
+  (cond
+    [(empty? x) 0]
+    [(symbol? x) 1]
+    [(dir? x) (how-many (dir-content x))]
+    [else (+ (how-many (first x))
+             (how-many (rest x)))]))
