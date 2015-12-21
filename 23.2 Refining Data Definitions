@@ -1,0 +1,48 @@
+(require 2htdp/abstraction)
+
+; Model 1 :
+; files as atomic entities and directories as containers
+; A Dir.v1 (short for directory) is one of: 
+; – '()
+; – (cons File.v1 Dir.v1)
+; – (cons Dir.v1 Dir.v1)
+; A File.v1 is a Symbol.
+
+; exercise 316
+(define Text '(part1 part2 part3))
+(define Code '(hang draw))
+(define Docs '(read!))
+(define Libs `(,Code ,Docs))
+(define TS `(,Text read! ,Libs))
+
+; exercise 317
+;; Dir.v1 -> Number
+;; determines how many symbols the given Dir.v1 contain
+(define (how-many dir)
+  (cond
+    [(empty? dir) 0]
+    [(symbol? dir) 1]
+    [else (+ (how-many (first dir))
+             (how-many (rest dir)))]))
+
+; Model 2:
+; directories as structure
+; A Dir.v2 is a structure: 
+;   (make-dir Symbol LOFD) 
+ 
+; A LOFD (short for list of files and directories) is one of:
+; – '()
+; – (cons File.v2 LOFD)
+; – (cons Dir.v2 LOFD)
+ 
+; A File.v2 is a Symbol.
+(define-struct dir [name content])
+
+; exercise 318
+(define Text (make-dir 'Text '(part1 part2 part3)))
+(define Code (make-dir 'Code '(hang draw)))
+(define Docs (make-dir 'Docs '(read1)))
+(define Libs (make-dir 'Libs `(,Code ,Docs)))
+(define TS (make-dir 'TS `(,Text read! ,Libs)))
+
+; exercise 319
