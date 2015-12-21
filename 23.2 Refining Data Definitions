@@ -98,7 +98,6 @@
 (define (how-many dir)
   (cond
     [(empty? dir) 0]
-    [(file? dir) 1]
     [(dir.v3? dir) (+ (length (dir.v3-files dir))
                       (how-many (dir.v3-dirs dir)))]
     [else (+ (how-many (first dir))
