@@ -1,0 +1,124 @@
+(require 2htdp/abstraction)
+(require htdp/dir)
+
+
+; exercise 325
+;; Dir Symbol -> Boolean
+(define (find? dir name)
+  (local ((define (name-equal? name f)
+            (or (string=? (symbol->string name)
+                          (symbol->string (file-name f)))
+                (string=? (symbol->string name)
+                          (string-append "|"
+                                         (symbol->string (file-name f))
+                                         "|")))))
+    (cond
+      [(empty? dir) #f]
+      [(dir? dir)
+       (or (for/or ((f (dir-files dir)))
+             (name-equal? name f))
+           (find? (dir-dirs dir) name))]
+      [(file? (first dir)) (for/or ((f dir))
+                     (name-equal? name f))]
+      [else (or (find? (first dir) name)
+                (find? (rest dir) name))])))
+
+; exercise 326
+;; Dir -> [List-of Symbol]
+(define (ls dir)
+  (local ((define (list-file-name lof)
+            (cond
+              [(empty? lof) '()]
+              [else (cons (file-name (first lof))
+                          (list-file-name (rest lof)))])))
+    (cond
+      [(empty? dir) '()]
+      [(dir? dir) (append (list (dir-name dir))
+                          (list-file-name (dir-files dir))
+                          (ls (dir-dirs dir)))]
+      [else (append (ls (first dir))
+                    (ls (rest dir)))])))
+
+; exercise 327
+;; Dir -> Number
+(define (du dir)
+  (cond
+    [(empty? dir) 0]
+    [(dir? dir) (+ (du (dir-dirs dir))
+                   (for/sum ((f (dir-files dir)))
+                     (file-size f)))]
+    [else (+ (du (first dir))
+             (du (rest dir)))]))
+
+(define (compose-path s1 s2)
+  (string->symbol
+   (string-append (symbol->string s1)
+                  "/"
+                  (symbol->string s2))))
+; exericse 328
+;; Dir Symbol -> Symbol/Boolean
+;; consumes a directory d and a file name f
+;; If (find? d f) is true, find produces a path to a file with name f
+;; otherwise it produces #false.
+(define (find d f)
+  (cond
+    [(or (empty? d) (not (find? d f))) #f]
+    [(dir? d) (if (not (find? (dir-dirs d) f))
+                  (compose-path (dir-name d) f)
+                  (find (dir-dirs d) f))]
+    [(dir? (first d))
+     (local ((define first-result (find (first d) f))
+             (define second-result (find (rest d) f)))
+       (cond
+         [(not (boolean? first-result)) first-result]
+         [(not (boolean? second-result)) second-result]
+         [else (and first-result second-result)]))]))
+
+; exercise 328-Challenge
+;; Dir Symbol -> [List-of Symbol]/Boolean
+;; consumes a Dir and a symbol,
+;; produces the list of all paths that lead to f in d
+(define (find-all d f)
+  (cond
+    [(or (empty? d) (not (find? d f))) '()]
+    [(dir? d) (if (find? (dir-files d) f)
+                  (append (list (compose-path (dir-name d) f))
+                          (find-all (dir-dirs d) f))
+                  (append '()
+                           (find-all (dir-dirs d) f)))]
+    [(dir? (first d))
+     (append (find-all (first d) f)
+             (find-all (rest d) f))]))
+
+
+; exercise 329
+;; Dir -> [List-of Symbol]
+(define (ls-R d)
+  (cond
+    [(empty? d) '()]
+    [(dir? d) (append (for/list ((f (dir-files d)))
+                        (compose-path (dir-name d)
+                                      (file-name f)))
+                      (ls-R (dir-dirs d)))]
+    [(dir? (first d)) (append (ls-R (first d))
+                              (ls-R (rest d)))]))
+
+; exercise 330
+;; Dir Symbol -> [List-of Symbol]
+(define (find-all.v2 d f)
+  (local ((define lop (ls-R d))
+          (define (find.v2 l f)
+            (remove-empty
+             (for/list ((x l))
+               (if (string-contains? (symbol->string f) (symbol->string x))
+                   x
+                   '()))))
+          (define (remove-empty l)
+            (cond
+              [(empty? l) '()]
+              [(empty? (first l)) (remove-empty (rest l))]
+              [else (cons (first l) (remove-empty (rest l)))])))
+    (cond
+      [(empty? lop) '()]
+      [else (find.v2 lop f)])))
+      
