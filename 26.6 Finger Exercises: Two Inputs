@@ -1,3 +1,5 @@
+(require 2htdp/abstraction)
+
 ; exercise 378
 (define (merge l1 l2)
   (cond
