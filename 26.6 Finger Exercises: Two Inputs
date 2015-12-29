@@ -17,3 +17,50 @@
     [(or (zero? n) (empty? l)) '()]
     [else (cons (first l)
                 (take (rest l) (sub1 n)))]))
+
+; exercise 381
+(define-struct card [number hours])
+(define-struct employee [name number payrate])
+(define-struct wages [name wage])
+(define (wages*.v3 loe loc)
+  (local ((define (get-pay n hours loe)
+            (for/or ((x loe) (y loe))
+              (if (= n (employee-number x))
+                  (make-wages (employee-name x)
+                              (* (employee-payrate x)
+                                 hours))
+                  false)))
+          (define (get-wages loe loc)
+            (cond
+              [(or (empty? loe) (empty? loc)) '()]
+              [else
+               (cons
+                (get-pay (card-number (first loc))
+                         (card-hours (first loc))
+                         loe)
+                (get-wages loe (rest loc)))])))
+    (get-wages loe loc)))
+    
+; exercise 382
+(define (value l1 l2)
+  (for/sum ((x l1) (y l2))
+    (* x y)))
+    
+; exercise 383
+; [List-of X] -> X 
+; returns a random item from the list 
+; assume the list is not empty 
+(define (random-pick l)
+  (list-ref (random (length l)) l))
+  
+; [List-of String] [List-of [List-of String]] 
+; -> [List-of [List-of String]]
+; produces the list of those lists in ll that do not agree 
+; with names at any place 
+(define (non-same names ll)
+  (cond
+    [(empty? ll) '()]
+    [else (if (member? names ll)
+              (rest ll)
+              (append (first ll)
+                      (non-same names (rest ll))))]))
