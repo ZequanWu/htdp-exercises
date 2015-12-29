@@ -60,7 +60,7 @@
 (define (non-same names ll)
   (cond
     [(empty? ll) '()]
-    [else (if (member? names ll)
+    [else (if (equal? names (first ll))
               (rest ll)
-              (append (first ll)
-                      (non-same names (rest ll))))]))
+              (cons (first ll)
+                    (non-same names (rest ll))))]))
