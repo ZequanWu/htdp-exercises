@@ -1,0 +1,27 @@
+(require 2htdp/abstraction)
+
+;exercise 419
+(define (gcd-structural small large)
+  (largest-common (divisors smaller smaller) (divisors small large)))
+ 
+; N[>= 1] N[>= 1] -> [List-of N]
+; computes the list of divisors of l smaller or equal to k
+(define (divisors k l)
+  (local ((define (d count)
+            (cond
+              [(= count k) (if (zero? (remainder l count))
+                               (list count)
+                               '())]
+              [else (append (if (zero? (remainder l count))
+                                (list count)
+                                '())
+                            (d (add1 count)))])))
+    (d 1)))
+ 
+; [List-of N] [List-of N] -> N
+; finds the largest number common to both k and l
+(define (largest-common k l)
+  (for*/or ((i (reverse k)) (j (reverse l)))
+    (if (= i j)
+        i
+        false)))
