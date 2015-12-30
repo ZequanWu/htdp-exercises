@@ -1,0 +1,38 @@
+; exercise 398
+(define (partition s n)
+  (cond
+    [(or (> n (string-length s)) (< n 2)) (cons s '())]
+    [else (cons (substring s 0 n)
+                (partition (substring s n) n))]))
+                
+; [List-of Number] -> [List-of Number]
+; creates a list of numbers with the same numbers as
+; alon, sorted in ascending order
+(define (quick-sort alon)
+  (cond
+    [(< (length alon) 2) alon]
+    [else
+     (local ((define pivot (first alon)))
+       (append (quick-sort (smaller-items alon pivot))
+               (list pivot)
+               (quick-sort (larger-items alon pivot))))]))
+
+(define (smaller-items l n)
+  (extract l n <))
+(define (larger-items l n)
+  (extract l n >))
+(define (extract l n cmp)
+  (cond
+    [(empty? l) '()]
+    [else (if (cmp (first l) n)
+              (cons (first l) (extract (rest l) n cmp))
+              (extract (rest l) n cmp))]))
+; exercise 401              
+(define (quick-sort.v2 alon)
+  (cond
+    [(< (length alon) 20) (sort alon <)]
+    [else
+     (local ((define pivot (first alon)))
+       (append (quick-sort (smaller-items alon pivot))
+               (list pivot)
+               (quick-sort (larger-items alon pivot))))]))
