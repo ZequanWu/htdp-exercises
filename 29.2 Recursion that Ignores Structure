@@ -33,18 +33,18 @@
     [(< (length alon) 20) (sort alon <)]
     [else
      (local ((define pivot (first alon)))
-       (append (quick-sort (smaller-items alon pivot))
+       (append (quick-sort.v2 (smaller-items alon pivot))
                (list pivot)
-               (quick-sort (larger-items alon pivot))))]))
+               (quick-sort.v2 (larger-items alon pivot))))]))
 ; exervise 402
 (define (quick-sort.v3 alon)
   (cond
     [(< (length alon) 2) alon]
     [else
      (local ((define pivot (first alon)))
-       (append (quick-sort (smaller-items (rest alon) pivot))
+       (append (quick-sort.v3 (smaller-items (rest alon) pivot))
                (list pivot)
-               (quick-sort (larger-items (rest alon) pivot))))]))
+               (quick-sort.v3 (larger-items (rest alon) pivot))))]))
 ; exercise 403
 (define (smaller-items.v2 l p)
   (filter (lambda (x) (< x p)) l))
