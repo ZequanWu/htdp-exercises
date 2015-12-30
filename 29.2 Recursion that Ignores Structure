@@ -36,3 +36,29 @@
        (append (quick-sort (smaller-items alon pivot))
                (list pivot)
                (quick-sort (larger-items alon pivot))))]))
+; exervise 402
+(define (quick-sort.v3 alon)
+  (cond
+    [(< (length alon) 2) alon]
+    [else
+     (local ((define pivot (first alon)))
+       (append (quick-sort (smaller-items (rest alon) pivot))
+               (list pivot)
+               (quick-sort (larger-items (rest alon) pivot))))]))
+; exercise 403
+(define (smaller-items.v2 l p)
+  (filter (lambda (x) (< x p)) l))
+(define (larger-items.v2 l p)
+  (filter (lambda (x) (> x p)) l))
+  
+; exercise 404
+(define (quick-sort alon)
+  (cond
+    [(< (length alon) 2) alon]
+    [else
+     (local ((define pivot (first alon))
+             (define (compare l p cmp)
+               (filter (lambda (x) (cmp x p)) l)))
+       (append (quick-sort (compare (rest alon) pivot <))
+               (list pivot)
+               (quick-sort (compare (rest alon) pivot >=))))]))
