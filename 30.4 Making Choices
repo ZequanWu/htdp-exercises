@@ -25,3 +25,28 @@
     (if (= i j)
         i
         false)))
+        
+; exercise 428
+(define (f n l)
+  (cond
+    [(or (empty? l) (zero? n)) '()]
+    [else (cons (first l)
+                (f (sub1 n) (rest l)))]))
+
+(define (remove-items n l)
+  (cond
+    [(empty? l) '()]
+    [(zero? n) l]
+    [else (remove-items (sub1 n) (rest l))]))
+
+(define (create-matrix n l)
+  (cond
+    [(empty? l) '()]
+    [else (cons (f n l)
+                (create-matrix n (remove-items n l)))]))
+
+(define (create-list n)
+  (cond
+    [(zero? n) '()]
+    [else (append (create-list (sub1 n))
+                  (list n))]))
