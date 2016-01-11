@@ -1,0 +1,92 @@
+(require 2htdp/abstraction)
+; An SOE is a non-empty Matrix
+; constraint if its length is n (in N), each item has length (+ n 1)
+; interpretation an SOE represents a system of linear equations
+ 
+; An Equation is [List-of Number]
+; constraint an Equation contains at least two numbers. 
+; interpretation if (list a1 ... an b) is an Equation, a1, ..., an are
+; the left-hand side variable coefficients and b is the right-hand side
+ 
+; A Solution is [List-of Number]
+
+(define (check-solution soe solution)
+  (local ((define (check eq sol)
+            (= (first (reverse eq))
+               (mul eq sol)))
+          (define (mul lon1 lon2)
+            (cond
+              [(or (empty? lon1) (empty? lon2)) 0]
+              [else (+ (* (first lon1) (first lon2))
+                       (mul (rest lon1) (rest lon2)))])))
+  (cond
+    [(empty? (rest soe)) (check (first soe) solution)]
+    [else (and (check (first soe) solution)
+               (check-solution (rest soe) solution))])))
+(define soe (list (list 2 2 3 10)
+                  (list 2 5 12 31)
+                  (list 4 1 -2 1)))
+(define solution '(1 1 2))
+(check-solution soe solution)
+
+(define (*. num lon)
+  (cond
+    [(empty? lon) '()]
+    [else (cons (* num (first lon))
+                (*. num (rest lon)))]))
+
+; substract eq1 from eq2
+(define (substract eq1 eq2)
+  (local ((define (minus lon1 lon2)
+            (cond
+              [(empty? lon1) '()]
+              [else (cons (- (first lon2) (first lon1))
+                          (minus (rest lon1) (rest lon2)))])))
+  (cond
+    [(< (* (first eq1) (first eq2)) 0)
+     (if (> (first eq1) 0)
+         (substract (*. -1 eq1) eq2)
+         (substract eq1 (*. -1 eq2)))]
+    [(= (first eq2) (first eq1)) (rest (minus eq1 eq2))]
+    [else (substract eq1 (minus eq1 eq2))])))
+
+(define (remove-last l)
+  (reverse (rest (reverse l))))
+(define (last l)
+  (first (reverse l)))
+
+; SOE -> TM
+; triangulates the given system of equations 
+(define (triangulate M)
+  (cond
+    [(for/and ((l M)) (zero? (first l))) (error "no solustion")]
+    [(zero? (first (first M)))
+     (triangulate (append (rest M)
+                          (list (first M))))]
+    [(= 2 (length M)) (cons (first M)
+                            (cons (substract (first M) (second M)) '()))]
+    [else (cons (first M)
+                (triangulate (for/list ((l (rest M)))
+                               (substract (first M) l))))]))
+
+(define (solve tri)
+  (local ((define (solve-one eq) ))
+    (cond
+      []
+      [else (cons ()
+                  (solve-one (last tri)))])))
+
+(define l1 '(3 9 21))
+(define l2 '(-3 -8 -19))
+(define M (list (list 2 2  3 10)
+                (list 2 5 12 31)
+                (list 4 1 -2  1)))
+(define M2 (list (list 2  3  3 8)
+                 (list 2  3 -2 3)
+                 (list 4 -2  2 4)))
+(define M3 (list (list 2 2 2 6)
+                 (list 2 2 4 8)
+                 (list 2 2 1 2)))
+(triangulate M)
+(triangulate M2)
+(triangulate M3)
