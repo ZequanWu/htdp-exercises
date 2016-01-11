@@ -70,11 +70,22 @@
                                (substract (first M) l))))]))
 
 (define (solve tri)
-  (local ((define (solve-one eq) ))
+  (local (
+          (define (solve-one eq solution)
+            (cond
+              [(empty? (rest (rest eq)))
+               (list (/ (second eq)
+                        (first eq)))]
+              [else
+               (cons (/ (- (last eq)
+                           (for/sum ((n (rest (reverse eq)))
+                                     (var (reverse solustion)))
+                             (* n var)))
+                        (first eq))
+                     solution)]))
     (cond
       []
-      [else (cons ()
-                  (solve-one (last tri)))])))
+      [else ])))
 
 (define l1 '(3 9 21))
 (define l2 '(-3 -8 -19))
