@@ -85,7 +85,7 @@
                      solution)]))
     (cond
       []
-      [else ])))
+      [else ]))))
 
 (define l1 '(3 9 21))
 (define l2 '(-3 -8 -19))
